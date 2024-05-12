@@ -10,13 +10,8 @@ mouse = pynput.mouse.Controller()
 mouse_btns = pynput.mouse.Button
 io = pynput_utils()
 
-gamepad_axis = {
-    'l_thumb_x':0,
-    'l_thumb_y':0,
-    'r_thumb_x':0,
-    'r_thumb_y':0,
-    'right_trigger':0,
-}
+
+gamepad_axis = {}
 gamepad_btns = {}
 on_off_switch = 1
 toggle_wait = 1
@@ -36,16 +31,16 @@ while True:
             except AttributeError:
                 break
 
-            if gamepad_btns[6] and toggle_wait:
-                if gamepad_btns[8]:
+            if gamepad_btns['select'] and toggle_wait:
+                if gamepad_btns['LS']:
                     on_off_switch = 1 - on_off_switch
                     toggle_wait = 0
-                io.key_touch(key.media_volume_up, gamepad_btns[1])
-                io.key_touch(key.media_volume_down, gamepad_btns[2])
-            elif gamepad_btns[6] == toggle_wait:
+                io.key_touch(key.media_volume_up, gamepad_btns['dpad_up'])
+                io.key_touch(key.media_volume_down, gamepad_btns['dpad_down'])
+            elif gamepad_btns['select'] == toggle_wait:
                 toggle_wait = 1
 
-            if on_off_switch and not gamepad_btns[6]:
+            if on_off_switch and not gamepad_btns['select']:
                 # get mouse movement percentage and move pointer
                 if gamepad_axis['l_thumb_x'] < 0:
                     x_speed = -min(((gamepad_axis['l_thumb_x']/32767)**2), 0.5)
@@ -73,16 +68,17 @@ while True:
 
 
                 # send mouse button presses
-                io.mouse_touch(mouse_btns.left, gamepad_btns[10])
+                io.mouse_touch(mouse_btns.left, gamepad_btns['RB'])
                 io.mouse_touch(mouse_btns.right, gamepad_axis['right_trigger'])
 
 
                 # send keyboard input
-                io.key_touch(key.up, gamepad_btns[1])
-                io.key_touch(key.down, gamepad_btns[2])
-                io.key_touch(key.left, gamepad_btns[3])
-                io.key_touch(key.right, gamepad_btns[4])
-                io.key_touch('k', gamepad_btns[5])
+                io.key_touch(key.up, gamepad_btns['dpad_up'])
+                io.key_touch(key.down, gamepad_btns['dpad_down'])
+                io.key_touch(key.left, gamepad_btns['dpad_left'])
+                io.key_touch(key.right, gamepad_btns['dpad_right'])
+                io.key_touch('k', gamepad_btns['start'])
+                io.key_touch(key.space, gamepad_btns['Y'])
                 
 
                 # print(math.sqrt(gamepad_axis['l_thumb_x']**2 + gamepad_axis['l_thumb_y']**2)/34000)
