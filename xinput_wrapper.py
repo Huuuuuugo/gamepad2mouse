@@ -1,7 +1,6 @@
 # source: https://stackoverflow.com/questions/43414189/how-can-i-use-xinput-in-python-without-pygame-to-sniff-button-presses-on-the
 # source: https://pastebin.com/8KDYbpaj
 
-#TODO: make xinput_wrapper.py return a list instead of dict
 
 from __future__ import absolute_import, division
 from itertools import count
@@ -47,12 +46,7 @@ class GamepadControls(XInputJoystick):
             old_val = int(self.translate(old_val, data_size) * 65535)
             new_val = int(self.translate(new_val, data_size) * 65535)
  
-            #Detect when to send update
-            movement = old_val != new_val and abs(old_val - new_val) > 1
-            is_trigger = axis.endswith('trigger')
-            in_dead_zone = abs(new_val) < dead_zone
-            if movement and (not in_dead_zone or new_val == 0):
-                result[axis] = new_val
+            result[axis] = new_val
             
         return result
         
@@ -63,40 +57,23 @@ class GamepadControls(XInputJoystick):
         buttons_state = get_bit_values(self._state.gamepad.buttons, 16)
         changed.reverse()
         buttons_state.reverse()
-        button_numbers = count(1)
-        changed_buttons = list(list(zip(changed, button_numbers, buttons_state))) # list(filter(itemgetter(0), list(zip(changed, button_numbers, buttons_state))))
+        button_numbers = ['dpad_up', 'dpad_down', 'dpad_left', 'dpad_right', 'start', 'select', 'LS', 'RS', 'LB', 'RB', 11, 12, 'A', 'B', 'X', 'Y']
+        changed_buttons = list(list(zip(changed, button_numbers, buttons_state)))
         
         result = {}
         for changed, number, pressed in changed_buttons:
             result[number] = pressed
         return result
  
- 
-if __name__ == '__main_':
-    import time
- 
-    #Example usage
-    gamepads = GamepadControls.list_gamepads()
-    while True:
-        for gamepad in gamepads:
-            with gamepad as gamepad_input:
-                for axis, amount in gamepad_input.get_axis().items():
-                    print(axis, amount)
-                for button, state in gamepad_input.get_button().items():
-                    print(button, state)
-                    input()
-        time.sleep(1/60)
-
 
 if __name__ == '__main__':
     import time
- 
+
     #Example usage
     gamepads = GamepadControls.list_gamepads()
     while True:
-        for gamepad in gamepads:
-            with gamepad as gamepad_input:
-                print(gamepad_input.get_axis())
-                print(gamepad_input.get_button())
-                # input()
+        with gamepads[0] as gamepad_input:
+            buttons = gamepad_input.get_button()
+            axis = gamepad_input.get_axis()
+            print(f"{buttons}\n{axis}{' '*(132-len(str(axis))) + '\x1b[A\r'}", end='', flush=True)
         time.sleep(1/60)
