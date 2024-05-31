@@ -34,6 +34,7 @@ while True:
             if gamepad_btns['select'] and toggle_wait:
                 if gamepad_btns['LS']:
                     on_off_switch = 1 - on_off_switch
+                    gamepad.notify(on_off_switch)
                     toggle_wait = 0
                 io.key_touch(key.media_volume_up, gamepad_btns['dpad_up'])
                 io.key_touch(key.media_volume_down, gamepad_btns['dpad_down'])
